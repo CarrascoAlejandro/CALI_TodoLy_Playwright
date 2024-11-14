@@ -10,9 +10,9 @@ export class ProjectsPage {
     readonly newTodoItemDueDateBox: Locator;
     readonly dueDateInputTextBox: Locator;
 
-    //readonly firstTodoItemTD: Locator;
-    ///readonly firstTodoItemMoreOptionsButton: Locator;
-    //readonly firstTodoItemDeleteButton: Locator;
+    readonly firstTodoItemLI: Locator;
+    readonly firstTodoItemMoreOptionsButton: Locator;
+    readonly firstTodoItemDeleteButton: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -21,6 +21,11 @@ export class ProjectsPage {
         this.newTodoItemLI = page.locator('#mainItemList > li:last-child'); 
         this.newTodoItemDueDateBox = page.locator('#mainItemList > li:last-child .ItemDueDate').getByText('Set Due Date');
         this.dueDateInputTextBox = page.locator('#EditDueDateAdvDate').last();
+
+        this.firstTodoItemLI = page.locator('#mainItemList > li:first-child');
+        this.firstTodoItemMoreOptionsButton = page.locator('#mainItemList > li:first-child .ItemMenu');
+        this.firstTodoItemDeleteButton = page.locator('#itemContextMenu > li.delete.separator > a');
+
     }
 
     async goto() {
@@ -47,6 +52,22 @@ export class ProjectsPage {
 
         //assert the created item to have the date visible and in the correct format
         expect(this.newTodoItemLI).toContainText(formatDateToMatchView(oneMonthFromToday) + " 12:00 AM");
+    }
+
+    async deleteFirstTodoItem(){
+        const itemIdOfFirstTodoItem = await this.firstTodoItemLI.getAttribute('itemid');
+
+        if (itemIdOfFirstTodoItem === null) {
+            throw new Error('First todo item does not have an itemid attribute');
+        }
+
+        await this.firstTodoItemLI.hover();
+        await this.firstTodoItemMoreOptionsButton.click();
+        await this.firstTodoItemDeleteButton.click();
+        await this.page.waitForTimeout(1000);
+
+        //assert the item to be deleted
+        expect(this.firstTodoItemLI).not.toHaveAttribute('itemid', itemIdOfFirstTodoItem);
     }
 
 }

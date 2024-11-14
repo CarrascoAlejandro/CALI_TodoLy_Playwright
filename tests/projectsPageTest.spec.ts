@@ -17,3 +17,8 @@ test("Adicionar un item en _Work_ con fecha de entrega (due date) un mes despué
     await projectsPage.createNewTodoItem("Test content");
     await projectsPage.setDateAtNewTodoItem();
 });
+
+test("Eliminar el primer item", async ({ page }) => {
+    const projectsPage = new ProjectsPage(page);
+    await projectsPage.deleteFirstTodoItem();
+});
