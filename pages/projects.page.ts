@@ -14,6 +14,14 @@ export class ProjectsPage {
     readonly firstTodoItemMoreOptionsButton: Locator;
     readonly firstTodoItemDeleteButton: Locator;
 
+    readonly penultimateTodoItemLI: Locator;
+    readonly penultimateTodoItemMoreOptionsButton: Locator;
+    readonly penultimateTodoItemPriorityButton: Locator;
+
+    readonly secondTodoItemLI: Locator;
+    readonly secondTodoItemMoreOptionsButton: Locator;
+    readonly secondTodoItemDeleteButton: Locator;
+
     constructor(page: Page) {
         this.page = page;
         this.signOutButton = page.locator('.signout');
@@ -25,6 +33,14 @@ export class ProjectsPage {
         this.firstTodoItemLI = page.locator('#mainItemList > li:first-child');
         this.firstTodoItemMoreOptionsButton = page.locator('#mainItemList > li:first-child .ItemMenu');
         this.firstTodoItemDeleteButton = page.locator('#itemContextMenu > li.delete.separator > a');
+
+        this.penultimateTodoItemLI = page.locator('#mainItemList > li:nth-last-child(2)');
+        this.penultimateTodoItemMoreOptionsButton = page.locator('#mainItemList > li:nth-last-child(2) .ItemMenu');
+        this.penultimateTodoItemPriorityButton = page.locator('#itemContextMenu > li.share.separator > div#Div1 span:nth-child(2)');
+
+        this.secondTodoItemLI = page.locator('#mainItemList > li:nth-child(2)');
+        this.secondTodoItemMoreOptionsButton = page.locator('#mainItemList > li:nth-child(2) .ItemMenu');
+        this.secondTodoItemDeleteButton = page.locator('#itemContextMenu > li.delete.separator > a');
 
     }
 
@@ -70,4 +86,27 @@ export class ProjectsPage {
         expect(this.firstTodoItemLI).not.toHaveAttribute('itemid', itemIdOfFirstTodoItem);
     }
 
+    async openPenultimateTodoItemPriorityMenu() {
+        await this.penultimateTodoItemLI.hover();
+        await this.penultimateTodoItemMoreOptionsButton.click();
+        await this.penultimateTodoItemPriorityButton.click();
+    
+        // Esperar a que el color cambie a 'rgb(22, 139, 184)'
+        await expect(this.penultimateTodoItemLI.locator('.ItemContentDiv')).toHaveCSS('color', 'rgb(22, 139, 184)');
+    }
+    
+    async deleteSecondTodoItem() {
+        const itemIdOfSecondTodoItem = await this.secondTodoItemLI.getAttribute('itemid');
+    
+        if (itemIdOfSecondTodoItem === null) {
+            throw new Error('Second todo item does not have an itemid attribute');
+        }
+    
+        await this.secondTodoItemLI.hover();
+        await this.secondTodoItemMoreOptionsButton.click();
+        await this.secondTodoItemDeleteButton.click();
+    
+        // Esperar a que el elemento ya no tenga el atributo 'itemid'
+        await expect(this.secondTodoItemLI).not.toHaveAttribute('itemid', itemIdOfSecondTodoItem);
+    }
 }
