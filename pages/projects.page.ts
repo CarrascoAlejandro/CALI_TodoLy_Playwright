@@ -5,6 +5,10 @@ export class ProjectsPage {
     readonly url = "https://todo.ly/";
     readonly page: Page;
     readonly signOutButton: Locator;
+    readonly loader: Locator;
+    readonly messageInfo: Locator;
+    readonly mainContentTasks: Locator;
+
     readonly addNewTodoTextArea: Locator;
     readonly newTodoItemLI: Locator;
     readonly newTodoItemDueDateBox: Locator;
@@ -25,13 +29,17 @@ export class ProjectsPage {
     constructor(page: Page) {
         this.page = page;
         this.signOutButton = page.locator('.signout');
+        this.loader = page.locator('#LoaderImg');
+        this.messageInfo = page.locator('#HeaderMessageInfo');
+        this.mainContentTasks = page.locator('#MainContentTasks')
+
         this.addNewTodoTextArea = page.locator('#NewItemContentInput');
         this.newTodoItemLI = page.locator('#mainItemList > li:last-child'); 
         this.newTodoItemDueDateBox = page.locator('#mainItemList > li:last-child .ItemDueDate').getByText('Set Due Date');
         this.dueDateInputTextBox = page.locator('#EditDueDateAdvDate').last();
 
-        this.firstTodoItemLI = page.locator('#mainItemList > li:first-child');
-        this.firstTodoItemMoreOptionsButton = page.locator('#mainItemList > li:first-child .ItemMenu');
+        this.firstTodoItemLI = page.locator('#mainItemList > li:nth-child(1)');
+        this.firstTodoItemMoreOptionsButton = page.locator('#mainItemList > li:nth-child(1) .ItemMenu');
         this.firstTodoItemDeleteButton = page.locator('#itemContextMenu > li.delete.separator > a');
 
         this.penultimateTodoItemLI = page.locator('#mainItemList > li:nth-last-child(2)');
@@ -52,7 +60,7 @@ export class ProjectsPage {
         await this.addNewTodoTextArea.waitFor({ state: 'visible' });
         await this.addNewTodoTextArea.fill(todoItemContent);
         await this.page.keyboard.press('Enter');
-        await this.page.waitForTimeout(1000);
+        await this.loader.waitFor({ state: 'hidden' });
         // assert the item to be created
         expect(this.newTodoItemLI).toHaveText(todoItemContent);
     }
@@ -64,10 +72,12 @@ export class ProjectsPage {
         await this.dueDateInputTextBox.waitFor({ state: 'visible' });
         await this.dueDateInputTextBox.fill(formatDateToYYYYMMDD(oneMonthFromToday));
         await this.page.keyboard.press('Enter');
-        await this.page.waitForTimeout(1000);
+        await this.loader.waitFor({ state: 'hidden' });
 
         //assert the created item to have the date visible and in the correct format
-        expect(this.newTodoItemLI).toContainText(formatDateToMatchView(oneMonthFromToday) + " 12:00 AM");
+        const newTodoItemHTML : string = await this.newTodoItemLI.innerHTML();
+        console.log(newTodoItemHTML);
+        expect(newTodoItemHTML).toContain(formatDateToMatchView(oneMonthFromToday) + " 12:00 AM");
     }
 
     async deleteFirstTodoItem(){
@@ -80,10 +90,13 @@ export class ProjectsPage {
         await this.firstTodoItemLI.hover();
         await this.firstTodoItemMoreOptionsButton.click();
         await this.firstTodoItemDeleteButton.click();
-        await this.page.waitForTimeout(1000);
+        await this.loader.waitFor({ state: 'hidden' });
 
         //assert the item to be deleted
-        expect(this.firstTodoItemLI).not.toHaveAttribute('itemid', itemIdOfFirstTodoItem);
+        expect(this.messageInfo).toHaveText(/.*Item has been Deleted.*/);
+        
+        //expect the id to not exist in the page
+        await expect(this.mainContentTasks).not.toHaveText(itemIdOfFirstTodoItem);
     }
 
     async openPenultimateTodoItemPriorityMenu() {

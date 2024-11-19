@@ -21,8 +21,6 @@ export function formatDateToMatchView(date: Date): string {
     if (currentYear !== dateYear) {
         return `${formattedDate} ${dateYear}`;
     }
-
-    console.log(formattedDate);
     
     return formattedDate;
 }
