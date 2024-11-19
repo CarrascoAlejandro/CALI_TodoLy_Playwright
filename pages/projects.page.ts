@@ -103,7 +103,8 @@ export class ProjectsPage {
         await this.penultimateTodoItemLI.hover();
         await this.penultimateTodoItemMoreOptionsButton.click();
         await this.penultimateTodoItemPriorityButton.click();
-    
+        await this.loader.waitFor({ state: 'hidden' });
+
         // Esperar a que el color cambie a 'rgb(22, 139, 184)'
         await expect(this.penultimateTodoItemLI.locator('.ItemContentDiv')).toHaveCSS('color', 'rgb(22, 139, 184)');
     }
@@ -119,7 +120,16 @@ export class ProjectsPage {
         await this.secondTodoItemMoreOptionsButton.click();
         await this.secondTodoItemDeleteButton.click();
     
-        // Esperar a que el elemento ya no tenga el atributo 'itemid'
-        await expect(this.secondTodoItemLI).not.toHaveAttribute('itemid', itemIdOfSecondTodoItem);
-    }
+        // Wait for the info message to appear
+        await this.messageInfo.waitFor({ state: 'visible' });
+    
+        // Assert the message content
+        await expect(this.messageInfo).toHaveText('Info. Item has been Deleted');
+    
+        // Wait for the loader to disappear (second appearance)
+        await this.loader.waitFor({ state: 'hidden' });
+    
+        // Ensure the item is no longer in the list
+        await expect(this.mainContentTasks).not.toContainText(itemIdOfSecondTodoItem);
+    }    
 }
