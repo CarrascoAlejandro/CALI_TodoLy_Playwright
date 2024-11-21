@@ -1,0 +1,521 @@
+{
+	"info": {
+		"_postman_id": "9b11cce6-6ff3-4e05-ac26-cebf0d67936f",
+		"name": "TodoLyProjectAPITests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29433672"
+	},
+	"item": [
+		{
+			"name": "Create User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.environment.set(\"email\", jsonData.Email);\r",
+							"pm.environment.set(\"username\", jsonData.FullName);\r",
+							"pm.environment.set(\"user_id\", jsonData.Id);\r",
+							"\r",
+							"console.log(\"Created user for testing suite \", jsonData.Email)\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let today = new Date().getTime() \r",
+							"pm.collectionVariables.set(\"emailGenerated\", `${today}@email.com`);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Email\": \"{{emailGenerated}}\",\r\n  \"FullName\": \"{{$randomFullName}}\",\r\n  \"Password\": \"{{password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://todo.ly/api/user.json",
+					"protocol": "https",
+					"host": [
+						"todo",
+						"ly"
+					],
+					"path": [
+						"api",
+						"user.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// General Checks\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than three seconds\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(3000);\r",
+							"});\r",
+							"pm.test(\"Status code name has string\", function () {\r",
+							"    pm.response.to.have.status(\"OK\");\r",
+							"});\r",
+							"\r",
+							"// FullBody Assertion\r",
+							"pm.test(\"Response body contains all elements\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    responseData.forEach(item => {\r",
+							"        if (item.Checklist && item.Checklist.length > 0) {\r",
+							"            item.Checklist.forEach(checklistItem => {\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Id');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Content');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ItemsCount');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Icon');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ItemType');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ParentId');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Collapsed');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ItemOrder');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Children');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('IsProjectShared');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ProjectShareOwnerName');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ProjectShareOwnerEmail');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('IsShareApproved');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('IsOwnProject');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('LastSyncedDateTime');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('LastUpdatedDate');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Deleted');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('SyncClientCreationId');\r",
+							"            });\r",
+							"        }\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"// Specific checks\r",
+							"let responseData = pm.response.json();\r",
+							"\r",
+							"let expectedContentValues = [\"Work\", \"Home\", \"Study\", \"Personal\", \"Shopping List\"];\r",
+							"\r",
+							"pm.test(\"Default projects exist\", function () {\r",
+							"    expectedContentValues.forEach(content => {\r",
+							"        pm.expect(responseData.map(item => item.Content)).to.include(content);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"let validProjectNames = [\"Sub Project\", pm.environment.get(\"project_name\") , pm.environment.get(\"project_name_2\")];\r",
+							"\r",
+							"pm.test(\"Items with non-empty Children array contain a valid project name in child Content\", function () {\r",
+							"    responseData.forEach(item => {\r",
+							"        if (item.Children && item.Children.length > 0) {\r",
+							"            // Check if any child in the Children array has Content matching one of the valid project names\r",
+							"            let hasValidProjectName = item.Children.some(child => validProjectNames.includes(child.Content));\r",
+							"            pm.expect(hasValidProjectName).to.be.true;\r",
+							"        }\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"// Retrieving some values for later\r",
+							"pm.environment.set(\"parent_project\", responseData[1].Id)\r",
+							"pm.environment.set(\"parent_project_2\", responseData[2].Id)\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}.json",
+					"host": [
+						"{{url}}",
+						"json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create New Project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// General Checks\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than a second\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});\r",
+							"pm.test(\"Status code name has string\", function () {\r",
+							"    pm.response.to.have.status(\"OK\");\r",
+							"});\r",
+							"\r",
+							"// FullBody Assertion\r",
+							"pm.test(\"Response body contains all elements\", function () {\r",
+							"    const checklistItem = pm.response.json();\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Id');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Content');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ItemsCount');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Icon');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ItemType');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ParentId');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Collapsed');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ItemOrder');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Children');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('IsProjectShared');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ProjectShareOwnerName');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ProjectShareOwnerEmail');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('IsShareApproved');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('IsOwnProject');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('LastSyncedDateTime');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('LastUpdatedDate');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Deleted');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('SyncClientCreationId');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// Specific checks\r",
+							"let responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response has a valid id\", function () {\r",
+							"    pm.expect(responseData.Id).to.be.below(9999999).above(1000000);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has a parent project\", function () {\r",
+							"    var parentId  = pm.environment.get(\"parent_project\");\r",
+							"    pm.expect(responseData.ParentId).to.exist;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Value for ParentId matches the one stored in the environment\", function () {\r",
+							"    var parentId  = pm.environment.get(\"parent_project\");\r",
+							"    pm.expect(responseData.ParentId).to.eql(parentId);\r",
+							"});\r",
+							"\r",
+							"// Retrieving some values for later\r",
+							"pm.environment.set(\"created_project_id\", responseData.Id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"Content\": \"{{project_name}}\",\r\n    \"ParentId\": {{parent_project}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}.json",
+					"host": [
+						"{{url}}",
+						"json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Project By Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// General Checks\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than a second\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});\r",
+							"pm.test(\"Status code name has string\", function () {\r",
+							"    pm.response.to.have.status(\"OK\");\r",
+							"});\r",
+							"\r",
+							"// FullBody Assertion\r",
+							"pm.test(\"Response body contains all elements\", function () {\r",
+							"    const checklistItem = pm.response.json();\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Id');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Content');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ItemsCount');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Icon');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ItemType');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ParentId');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Collapsed');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ItemOrder');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Children');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('IsProjectShared');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ProjectShareOwnerName');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ProjectShareOwnerEmail');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('IsShareApproved');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('IsOwnProject');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('LastSyncedDateTime');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('LastUpdatedDate');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Deleted');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('SyncClientCreationId');\r",
+							"});\r",
+							"\r",
+							"// Specific checks\r",
+							"let responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Response project has 'Home' as its content\", function () {\r",
+							"    pm.expect(responseData.Content).to.include(\"Home\");\r",
+							"});\r",
+							"\r",
+							"// Define a function to recursively search for an Id in the children\r",
+							"function findChildWithId(children, targetId) {\r",
+							"    return children.some(child => {\r",
+							"        if (child.Id === targetId) {\r",
+							"            return true;\r",
+							"        }\r",
+							"        return findChildWithId(child.Children || [], targetId);\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"pm.test(\"At least one child with the created Id exists\", function () {\r",
+							"    let childId = pm.environment.get(\"created_project_id\");\r",
+							"    let hasChildWithId1001 = findChildWithId(responseData.Children, childId);\r",
+							"    pm.expect(hasChildWithId1001).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/{{parent_project}}.json",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"{{parent_project}}.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Project By Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// General Checks\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Response time is less than a second\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});\r",
+							"pm.test(\"Status code name has string\", function () {\r",
+							"    pm.response.to.have.status(\"OK\");\r",
+							"});\r",
+							"\r",
+							"// FullBody Assertion\r",
+							"pm.test(\"Response body contains all elements\", function () {\r",
+							"    const checklistItem = pm.response.json();\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Id');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Content');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ItemsCount');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Icon');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ItemType');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ParentId');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Collapsed');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ItemOrder');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Children');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('IsProjectShared');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ProjectShareOwnerName');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('ProjectShareOwnerEmail');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('IsShareApproved');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('IsOwnProject');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('LastSyncedDateTime');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('LastUpdatedDate');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('Deleted');\r",
+							"                pm.expect(checklistItem).to.be.an('object').that.has.property('SyncClientCreationId');\r",
+							"});\r",
+							"\r",
+							"// Specific checks\r",
+							"let responseData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Value for Id matches the one stored in the environment\", function () {\r",
+							"    var updatedId  = pm.environment.get(\"created_project_id\");\r",
+							"    pm.expect(responseData.Id).to.eql(updatedId);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Value for Icon is different than the default \", function () {\r",
+							"    pm.expect(responseData.Icon).to.not.eql(0);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Value for Content matches the one stored in the environment\", function () {\r",
+							"    var content  = pm.environment.get(\"project_name_2\");\r",
+							"    pm.expect(responseData.Content).to.include(content);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Value for ParentId matches the one stored in the environment\", function () {\r",
+							"    var parentId  = pm.environment.get(\"parent_project_2\");\r",
+							"    pm.expect(responseData.ParentId).to.eql(parentId);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{email}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"Content\": \"{{project_name_2}}\",\r\n\t\"Icon\": 5,\r\n    \"ParentId\": {{parent_project_2}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/{{created_project_id}}.json",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"{{created_project_id}}.json"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "emailGenerated",
+			"value": ""
+		}
+	]
+}
