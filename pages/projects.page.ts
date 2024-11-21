@@ -26,6 +26,12 @@ export class ProjectsPage {
     readonly secondTodoItemMoreOptionsButton: Locator;
     readonly secondTodoItemDeleteButton: Locator;
 
+    readonly subprojectOptionsButton: Locator;
+    readonly addItemAboveOption: Locator;
+    readonly editTextbox: Locator;
+    readonly saveEditButton: Locator;
+    readonly currentProjectTitle: Locator;
+
     constructor(page: Page) {
         this.page = page;
         this.signOutButton = page.locator('.signout');
@@ -49,6 +55,12 @@ export class ProjectsPage {
         this.secondTodoItemLI = page.locator('#mainItemList > li:nth-child(2)');
         this.secondTodoItemMoreOptionsButton = page.locator('#mainItemList > li:nth-child(2) .ItemMenu');
         this.secondTodoItemDeleteButton = page.locator('#itemContextMenu > li.delete.separator > a');
+
+        this.subprojectOptionsButton = page.locator('.ProjItemMenu');
+        this.addItemAboveOption = page.locator('li.add.separator a[href="#addAbove"]');
+        this.editTextbox = page.locator('#ItemEditTextbox');
+        this.saveEditButton = page.locator('#ItemEditSubmit');
+        this.currentProjectTitle = page.locator('#CurrentProjectTitle');
 
     }
 
@@ -132,4 +144,57 @@ export class ProjectsPage {
         // Ensure the item is no longer in the list
         await expect(this.mainContentTasks).not.toContainText(itemIdOfSecondTodoItem);
     }    
+
+    async createSubproject(subprojectName: string) {
+        // Localizar el subproyecto existente dentro del proyecto "Work"
+        const subprojectRow = this.page.locator('.ProjItemContent', { hasText: 'Sub Project' });
+        await subprojectRow.hover();
+
+        // Localizar y abrir el menú de opciones del subproyecto
+        const optionsMenuButton = subprojectRow.locator('..').locator('.ProjItemMenu img[title="Options"]');
+        await optionsMenuButton.waitFor({ state: 'visible', timeout: 5000 });
+        await optionsMenuButton.click();
+
+        // Esperar a que el menú contextual aparezca y seleccionar "Add item below"
+        const addItemBelowOption = this.page.locator('#projectContextMenu li.add a[href="#addBelow"]');
+        await addItemBelowOption.waitFor({ state: 'visible', timeout: 5000 });
+        await addItemBelowOption.click();
+
+        // Llenar el campo con el nombre del nuevo subproyecto
+        const inputField = this.page.locator('.InputTextEditProj[addnewfield="true"]');
+        await inputField.waitFor({ state: 'visible', timeout: 5000 });
+        await inputField.fill(subprojectName);
+
+        // Guardar el subproyecto
+        const saveButton = this.page.locator('img[title="Save"][addnewfield="true"]');
+        await saveButton.waitFor({ state: 'visible', timeout: 5000 });
+        await saveButton.click();
+
+        // Verificar que el subproyecto ha sido creado
+        const currentProjectTitle = this.page.locator('.CurrentProjectTitle');
+        await currentProjectTitle.waitFor({ state: 'visible', timeout: 5000 });
+        await expect(currentProjectTitle).toHaveText(new RegExp(`^${subprojectName}$`));
+    }
+    
+    
+    
+
+    async addNewTodoItem(todoItemContent = "test content", index?: number) {
+        const targetTodoItem = index !== undefined
+            ? this.page.locator(`#mainItemList > li:nth-child(${index + 1})`)
+            : this.newTodoItemLI;
+    
+        // Esperar que el área de texto esté visible
+        await this.addNewTodoTextArea.waitFor({ state: 'visible' });
+        await this.addNewTodoTextArea.fill(todoItemContent);
+    
+        // Enviar el nuevo ítem
+        await this.page.keyboard.press('Enter');
+        await this.loader.waitFor({ state: 'hidden' });
+    
+        // Validar que el ítem se ha creado correctamente
+        await expect(targetTodoItem).toHaveText(new RegExp(`^${todoItemContent}$`));
+    }
+        
+    
 }

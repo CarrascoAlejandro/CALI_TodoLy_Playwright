@@ -1,4 +1,4 @@
-# Tercer Parcial -- Gestión de Calidad de Sistemas
+3. # Tercer Parcial -- Gestión de Calidad de Sistemas
 ## Integrantes:
 1. Carrasco Cespedes, Miguel Alejandro
 2. Campohermoso Berdeja, Oscar
@@ -41,3 +41,21 @@
 
     - Crear 3 ítems en cualquier proyecto vacío con diferentes prioridades
     - Ordenar los ítems por prioridad
+
+
+## Comandos:
+1. Ejecutar todos los test
+```
+npx playwright test
+```
+
+2. Ejecutar un test específico
+```
+npx playwright test "Ruta/archivo/nombre.spec.ts"
+```
+
+3. Ver reporte
+
+```
+npx playwright show-report
+```
