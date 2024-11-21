@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
     );
 });
 
-test("Crear un subproyecto en Work y validar creación", async ({ page }) => {
+test("Crear un subproyecto en Work y validar creación de subproyecto", async ({ page }) => {
     const projectsPage = new ProjectsPage(page);
 
     // Crear subproyecto con el nombre "2"
@@ -21,4 +21,22 @@ test("Crear un subproyecto en Work y validar creación", async ({ page }) => {
     // Validar que el subproyecto '2' ha sido creado correctamente
     const currentProjectTitle = projectsPage.page.locator('.CurrentProjectTitle');
     await expect(currentProjectTitle).toHaveText("2");
+
+});
+
+
+test("Crear un subproyecto en Work, adicionar dos items y validar creación de items", async ({ page }) => {
+    const projectsPage = new ProjectsPage(page);
+
+    await projectsPage.createSubproject("2");
+    const currentProjectTitle = projectsPage.page.locator('.CurrentProjectTitle');
+    await expect(currentProjectTitle).toHaveText("2");
+
+    // Adicionar ítems al subproyecto "2"
+    await projectsPage.addItemToSubproject("Item ID01");
+    await projectsPage.addItemToSubproject("Item ID02");
+
+    // Verificar que los ítems se han agregado correctamente
+    await expect(projectsPage.getItemLocator("Item ID01")).toBeVisible();
+    await expect(projectsPage.getItemLocator("Item ID02")).toBeVisible();
 });

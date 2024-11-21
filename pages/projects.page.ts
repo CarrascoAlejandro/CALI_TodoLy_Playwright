@@ -175,26 +175,19 @@ export class ProjectsPage {
         await currentProjectTitle.waitFor({ state: 'visible', timeout: 5000 });
         await expect(currentProjectTitle).toHaveText(new RegExp(`^${subprojectName}$`));
     }
-    
-    
-    
 
-    async addNewTodoItem(todoItemContent = "test content", index?: number) {
-        const targetTodoItem = index !== undefined
-            ? this.page.locator(`#mainItemList > li:nth-child(${index + 1})`)
-            : this.newTodoItemLI;
-    
-        // Esperar que el área de texto esté visible
+    async addItemToSubproject(itemContent: string) {
         await this.addNewTodoTextArea.waitFor({ state: 'visible' });
-        await this.addNewTodoTextArea.fill(todoItemContent);
-    
-        // Enviar el nuevo ítem
-        await this.page.keyboard.press('Enter');
+
+        await this.addNewTodoTextArea.fill(itemContent);
+        await this.page.locator('#NewItemAddButton').click();
+
         await this.loader.waitFor({ state: 'hidden' });
-    
-        // Validar que el ítem se ha creado correctamente
-        await expect(targetTodoItem).toHaveText(new RegExp(`^${todoItemContent}$`));
     }
-        
+
+    getItemLocator(itemContent: string): Locator {
+        return this.page.locator('.ItemContentDiv', { hasText: itemContent });
+    }
+            
     
 }
