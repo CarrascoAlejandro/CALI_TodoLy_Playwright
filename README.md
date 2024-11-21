@@ -1,4 +1,4 @@
-3. # Tercer Parcial -- Gestión de Calidad de Sistemas
+# Tercer Parcial -- Gestión de Calidad de Sistemas
 ## Integrantes:
 1. Carrasco Cespedes, Miguel Alejandro
 2. Campohermoso Berdeja, Oscar
