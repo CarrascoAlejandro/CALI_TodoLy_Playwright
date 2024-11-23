@@ -1,0 +1,51 @@
+{
+	"id": "0cdeb142-c77f-4205-a1aa-197e7defb5aa",
+	"name": "QAenv",
+	"values": [
+		{
+			"key": "url",
+			"value": "https://todo.ly/",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "emailGenerated",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "fullNameGenerated",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "passwordGenerated",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "randomProjectName",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "randomIcon",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		},
+		{
+			"key": "projectId",
+			"value": "",
+			"type": "any",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2024-11-23T03:11:56.627Z",
+	"_postman_exported_using": "Postman/11.18.4"
+}

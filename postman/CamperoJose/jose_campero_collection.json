@@ -1,0 +1,1118 @@
+{
+	"info": {
+		"_postman_id": "d97494fa-80d3-4ae9-b106-0c3c39b20146",
+		"name": "API-testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33756386"
+	},
+	"item": [
+		{
+			"name": "T5 - Crear Usuarios",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var randomEmail = `ucb_user${Math.floor(Math.random() * 100000000)}@ucb.edu.bo`;\r",
+							"var randomFullName = `José Campero ${Math.floor(Math.random() * 10000)}`;\r",
+							"var randomPassword = `password${Math.floor(Math.random() * 10000)}`;\r",
+							"\r",
+							"pm.environment.set(\"emailGenerated\", randomEmail);\r",
+							"pm.environment.set(\"fullNameGenerated\", randomFullName);\r",
+							"pm.environment.set(\"passwordGenerated\", randomPassword);\r",
+							"\r",
+							"console.log(\"Email generado: \" + randomEmail);\r",
+							"console.log(\"Nombre completo generado: \" + randomFullName);\r",
+							"console.log(\"Contraseña generada: \" + randomPassword);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    console.log(\"El código de estado es 200: ✓\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 2000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1500);\r",
+							"    console.log(\"El tiempo de respuesta es menor a 1500ms: ✓\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"Email\": \"{{emailGenerated}}\",\r\n  \"FullName\": \"{{fullNameGenerated}}\",\r\n  \"Password\": \"{{passwordGenerated}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/user.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"user.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear proyecto",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Generar un nombre de proyecto aleatorio",
+							"const projectNames = [\"Proyecto Innovador\", \"Mi Proyecto Único\", \"Soluciones Creativas\", \"Proyecto del Año\", \"Meta Futurista\"];",
+							"const randomName = projectNames[Math.floor(Math.random() * projectNames.length)];",
+							"",
+							"// Asignar el nombre y un icono aleatorio al cuerpo de la solicitud",
+							"pm.environment.set(\"randomProjectName\", randomName);",
+							"pm.environment.set(\"randomIcon\", Math.floor(Math.random() * 5) + 1);",
+							"",
+							"pm.request.body.update({",
+							"    mode: \"raw\",",
+							"    raw: JSON.stringify({",
+							"        Content: pm.environment.get(\"randomProjectName\"),",
+							"        Icon: pm.environment.get(\"randomIcon\")",
+							"    })",
+							"});",
+							"",
+							"console.log(\"Nombre del proyecto generado: \" + pm.environment.get(\"randomProjectName\"));",
+							"console.log(\"Icono aleatorio: \" + pm.environment.get(\"randomIcon\"));",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Prueba de código de estado",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    console.log(\"El código de estado es 200: ✓\");",
+							"});",
+							"",
+							"// Prueba de tiempo de respuesta",
+							"pm.test(\"Response time is less than 1200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1200);",
+							"    console.log(\"El tiempo de respuesta es menor a 1200ms: ✓\");",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.expect(jsonData.Id).to.be.a(\"number\").and.to.be.greaterThan(0);",
+							"console.log(\"El ID es válido y mayor a 0: ✓\");",
+							"",
+							"// Guardar el ID en el entorno",
+							"pm.environment.set(\"projectId\", jsonData.Id);",
+							"console.log(\"ID del proyecto guardado en el entorno: \" + jsonData.Id);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{passwordGenerated}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{emailGenerated}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Content\": \"{{randomProjectName}}\",\n    \"Icon\": {{randomIcon}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/projects.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"projects.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear Item 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Genera un nombre único usando una combinación de texto y número aleatorio",
+							"pm.variables.set(\"randomContent\", `Mi propio item #${Math.floor(Math.random() * 10000)}`);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Prueba de código de estado",
+							"pm.test(\"Status code is 200\", function () {",
+							"    console.log(\"El código de estado es 200: ✓\");",
+							"});",
+							"",
+							"// Prueba de tiempo de respuesta",
+							"pm.test(\"Response time is less than 1200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1200);",
+							"    console.log(\"El tiempo de respuesta es menor a 1200ms: ✓\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{passwordGenerated}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{emailGenerated}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Content\": \"{{randomContent}}\",\n    \"ProjectId\": {{projectId}}\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/items.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"items.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear Item 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Genera un nombre único usando una combinación de texto y número aleatorio",
+							"pm.variables.set(\"randomContent\", `Mi propio item #${Math.floor(Math.random() * 10000)}`);",
+							" "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Prueba de código de estado",
+							"pm.test(\"Status code is 200\", function () {",
+							"    console.log(\"El código de estado es 200: ✓\");",
+							"});",
+							"",
+							"// Prueba de tiempo de respuesta",
+							"pm.test(\"Response time is less than 1200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1200);",
+							"    console.log(\"El tiempo de respuesta es menor a 1200ms: ✓\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{passwordGenerated}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{emailGenerated}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Content\": \"{{randomContent}}\",\n    \"ProjectId\": {{projectId}}\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://todo.ly/api/items.json",
+					"protocol": "https",
+					"host": [
+						"todo",
+						"ly"
+					],
+					"path": [
+						"api",
+						"items.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear Item marcado como DONE 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Genera un nombre único usando una combinación de texto y número aleatorio",
+							"pm.variables.set(\"randomContent\", `Mi propio DONE item #${Math.floor(Math.random() * 10000)}`);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Prueba de código de estado",
+							"pm.test(\"Status code is 200\", function () {",
+							"    console.log(\"El código de estado es 200: ✓\");",
+							"});",
+							"",
+							"// Prueba de tiempo de respuesta",
+							"pm.test(\"Response time is less than 1200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1200);",
+							"    console.log(\"El tiempo de respuesta es menor a 1200ms: ✓\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{passwordGenerated}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{emailGenerated}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Content\": \"{{randomContent}}\",\n    \"ProjectId\": {{projectId}},\n    \"Checked\": true\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://todo.ly/api/items.json",
+					"protocol": "https",
+					"host": [
+						"todo",
+						"ly"
+					],
+					"path": [
+						"api",
+						"items.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear Item marcado como DONE 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Genera un nombre único usando una combinación de texto y número aleatorio",
+							"pm.variables.set(\"randomContent\", `Mi propio DONE item #${Math.floor(Math.random() * 10000)}`);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Prueba de código de estado",
+							"pm.test(\"Status code is 200\", function () {",
+							"    console.log(\"El código de estado es 200: ✓\");",
+							"});",
+							"",
+							"// Prueba de tiempo de respuesta",
+							"pm.test(\"Response time is less than 1200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1200);",
+							"    console.log(\"El tiempo de respuesta es menor a 1200ms: ✓\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{passwordGenerated}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{emailGenerated}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Content\": \"{{randomContent}}\",\n    \"ProjectId\": {{projectId}},\n    \"Checked\": true\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://todo.ly/api/items.json",
+					"protocol": "https",
+					"host": [
+						"todo",
+						"ly"
+					],
+					"path": [
+						"api",
+						"items.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear Item marcado como DONE 3",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Genera un nombre único usando una combinación de texto y número aleatorio",
+							"pm.variables.set(\"randomContent\", `Mi propio DONE item #${Math.floor(Math.random() * 10000)}`);",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Prueba de código de estado",
+							"pm.test(\"Status code is 200\", function () {",
+							"    console.log(\"El código de estado es 200: ✓\");",
+							"});",
+							"",
+							"// Prueba de tiempo de respuesta",
+							"pm.test(\"Response time is less than 1200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1200);",
+							"    console.log(\"El tiempo de respuesta es menor a 1200ms: ✓\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{passwordGenerated}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{emailGenerated}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Content\": \"{{randomContent}}\",\n    \"ProjectId\": {{projectId}},\n    \"Checked\": true\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://todo.ly/api/items.json",
+					"protocol": "https",
+					"host": [
+						"todo",
+						"ly"
+					],
+					"path": [
+						"api",
+						"items.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "T6 - Obtener Itemns de un proyecto",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Validación del código de estado",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    console.log(\"El código de estado es 200: ✓\");",
+							"});",
+							"",
+							"// Validación del tiempo de respuesta",
+							"pm.test(\"Response time is less than 1500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1500);",
+							"    console.log(\"El tiempo de respuesta es menor a 1500ms: ✓\");",
+							"});",
+							"",
+							"// Validar que la respuesta sea un JSON válido y sea un array",
+							"pm.test(\"Response is a valid JSON array\", function () {",
+							"    var jsonData;",
+							"    try {",
+							"        jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.be.an(\"array\");",
+							"        console.log(\"La respuesta es un JSON válido y un array: ✓\");",
+							"    } catch (e) {",
+							"        console.error(\"La respuesta no es JSON válido:\", e);",
+							"    }",
+							"});",
+							"",
+							"// Validar que cada elemento tenga las claves esperadas",
+							"pm.test(\"Each item has all expected keys\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.forEach(function (item) {",
+							"        pm.expect(item).to.have.keys([",
+							"            \"Id\",",
+							"            \"Content\",",
+							"            \"ItemType\",",
+							"            \"Checked\",",
+							"            \"ProjectId\",",
+							"            \"ParentId\",",
+							"            \"Path\",",
+							"            \"Collapsed\",",
+							"            \"DateString\",",
+							"            \"DateStringPriority\",",
+							"            \"DueDate\",",
+							"            \"Recurrence\",",
+							"            \"ItemOrder\",",
+							"            \"Priority\",",
+							"            \"LastSyncedDateTime\",",
+							"            \"Children\",",
+							"            \"DueDateTime\",",
+							"            \"CreatedDate\",",
+							"            \"LastCheckedDate\",",
+							"            \"LastUpdatedDate\",",
+							"            \"Deleted\",",
+							"            \"Notes\",",
+							"            \"InHistory\",",
+							"            \"SyncClientCreationId\",",
+							"            \"DueTimeSpecified\",",
+							"            \"OwnerId\"",
+							"        ]);",
+							"    });",
+							"    console.log(\"Todos los elementos tienen las claves esperadas: ✓\");",
+							"});",
+							"",
+							"",
+							"// Validar que 'Id' de cada elemento sea un número positivo",
+							"pm.test(\"Each item's ID is a positive number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.forEach(function (item) {",
+							"        pm.expect(item.Id).to.be.a(\"number\").and.to.be.above(0);",
+							"    });",
+							"    console.log(\"Todos los IDs son números positivos: ✓\");",
+							"});",
+							"",
+							"// Test to verify that the 'Checked' attribute is a boolean, either true or false",
+							"pm.test(\"Each item's Checked attribute is a boolean\", function () {",
+							"    pm.response.json().forEach(function (item) {",
+							"        pm.expect(item.Checked).to.be.a('boolean');",
+							"    });",
+							"});",
+							"",
+							"// Test to verify that the 'Deleted' attribute is always false",
+							"pm.test(\"Each item's Deleted attribute is always false\", function () {",
+							"    pm.response.json().forEach(function (item) {",
+							"        pm.expect(item.Deleted).to.be.false;",
+							"    });",
+							"});",
+							"",
+							"// Log para inspeccionar los datos de respuesta",
+							"console.log(\"Datos de la respuesta:\", pm.response.json());",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{passwordGenerated}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{emailGenerated}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}api/projects/{{projectId}}/items.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"projects",
+						"{{projectId}}",
+						"items.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "T7 - Obtener Itemns DONE de un proyecto",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Validación del código de estado",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    console.log(\"El código de estado es 200: ✓\");",
+							"});",
+							"",
+							"// Validación del tiempo de respuesta",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1500);",
+							"    console.log(\"El tiempo de respuesta es menor a 1500ms: ✓\");",
+							"});",
+							"",
+							"// Validar que la respuesta sea un JSON válido y sea un array",
+							"pm.test(\"Response is a valid JSON array\", function () {",
+							"    var jsonData;",
+							"    try {",
+							"        jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.be.an(\"array\");",
+							"        console.log(\"La respuesta es un JSON válido y un array: ✓\");",
+							"    } catch (e) {",
+							"        console.error(\"La respuesta no es JSON válido:\", e);",
+							"    }",
+							"});",
+							"",
+							"// Validar que cada elemento tenga las claves esperadas",
+							"pm.test(\"Each item has all expected keys\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.forEach(function (item) {",
+							"        pm.expect(item).to.have.keys([",
+							"            \"Id\",",
+							"            \"Content\",",
+							"            \"ItemType\",",
+							"            \"Checked\",",
+							"            \"ProjectId\",",
+							"            \"ParentId\",",
+							"            \"Path\",",
+							"            \"Collapsed\",",
+							"            \"DateString\",",
+							"            \"DateStringPriority\",",
+							"            \"DueDate\",",
+							"            \"Recurrence\",",
+							"            \"ItemOrder\",",
+							"            \"Priority\",",
+							"            \"LastSyncedDateTime\",",
+							"            \"Children\",",
+							"            \"DueDateTime\",",
+							"            \"CreatedDate\",",
+							"            \"LastCheckedDate\",",
+							"            \"LastUpdatedDate\",",
+							"            \"Deleted\",",
+							"            \"Notes\",",
+							"            \"InHistory\",",
+							"            \"SyncClientCreationId\",",
+							"            \"DueTimeSpecified\",",
+							"            \"OwnerId\"",
+							"        ]);",
+							"    });",
+							"    console.log(\"Todos los elementos tienen las claves esperadas: ✓\");",
+							"});",
+							"",
+							"// Validar que 'Id' de cada elemento sea un número positivo",
+							"pm.test(\"Each item's ID is a positive number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.forEach(function (item) {",
+							"        pm.expect(item.Id).to.be.a(\"number\").and.to.be.above(0);",
+							"    });",
+							"    console.log(\"Todos los IDs son números positivos: ✓\");",
+							"});",
+							"",
+							"// Validar que 'Checked' sea siempre verdadero en la respuesta",
+							"pm.test(\"'Checked' is true for all items\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.forEach(function (item) {",
+							"        pm.expect(item.Checked).to.be.true;",
+							"    });",
+							"    console.log(\"Todos los elementos tienen 'Checked' como verdadero: ✓\");",
+							"});",
+							"",
+							"// Validar que 'Content' no esté vacío",
+							"pm.test(\"Each item's Content is not empty\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.forEach(function (item) {",
+							"        pm.expect(item.Content).to.be.a(\"string\").and.to.not.be.empty;",
+							"    });",
+							"    console.log(\"Todos los elementos tienen 'Content' válido y no vacío: ✓\");",
+							"});",
+							"",
+							"// Log para inspeccionar los datos de respuesta",
+							"console.log(\"Datos de la respuesta:\", pm.response.json());",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{passwordGenerated}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{emailGenerated}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}api/projects/{{projectId}}/doneitems.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"projects",
+						"{{projectId}}",
+						"doneitems.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "T8 - Obtener Lista de Filtros",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Validación del código de estado",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    console.log(\"El código de estado es 200: ✓\");",
+							"});",
+							"",
+							"// Validación del tiempo de respuesta",
+							"pm.test(\"Response time is less than 1500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1500);",
+							"    console.log(\"El tiempo de respuesta es menor a 1500ms: ✓\");",
+							"});",
+							"",
+							"// Validar que la respuesta sea un JSON válido y un array",
+							"pm.test(\"Response is a valid JSON array\", function () {",
+							"    var jsonData;",
+							"    try {",
+							"        jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.be.an(\"array\");",
+							"        console.log(\"La respuesta es un JSON válido y un array: ✓\");",
+							"    } catch (e) {",
+							"        console.error(\"La respuesta no es JSON válido:\", e);",
+							"    }",
+							"});",
+							"",
+							"// Validar que cada elemento tenga las claves esperadas",
+							"pm.test(\"Each item has all expected keys\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.forEach(function (item) {",
+							"        pm.expect(item).to.have.keys([",
+							"            \"Id\",",
+							"            \"Content\",",
+							"            \"ItemsCount\",",
+							"            \"Icon\",",
+							"            \"ItemType\",",
+							"            \"Children\"",
+							"        ]);",
+							"    });",
+							"    console.log(\"Todos los elementos tienen las claves esperadas: ✓\");",
+							"});",
+							"",
+							"// Validar que 'Id' sea un número entero (positivo o negativo)",
+							"pm.test(\"Each item's ID is a valid number\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.forEach(function (item) {",
+							"        pm.expect(item.Id).to.be.a(\"number\");",
+							"    });",
+							"    console.log(\"Todos los IDs son números válidos: ✓\");",
+							"});",
+							"",
+							"// Validar que 'ItemsCount' sea un número entero no negativo",
+							"pm.test(\"Each item's ItemsCount is a non-negative integer\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.forEach(function (item) {",
+							"        pm.expect(item.ItemsCount).to.be.a(\"number\").and.to.be.at.least(0);",
+							"    });",
+							"    console.log(\"Todos los 'ItemsCount' son enteros no negativos: ✓\");",
+							"});",
+							"",
+							"// Validar que 'Content' no esté vacío",
+							"pm.test(\"Each item's Content is not empty\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.forEach(function (item) {",
+							"        pm.expect(item.Content).to.be.a(\"string\").and.to.not.be.empty;",
+							"    });",
+							"    console.log(\"Todos los elementos tienen 'Content' válido y no vacío: ✓\");",
+							"});",
+							"",
+							"// Validar que 'Children' sea siempre un array",
+							"pm.test(\"Each item's Children is an array\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.forEach(function (item) {",
+							"        pm.expect(item.Children).to.be.an(\"array\");",
+							"    });",
+							"    console.log(\"Todos los elementos tienen 'Children' como array: ✓\");",
+							"});",
+							"",
+							"// Validar que 'ItemType' sea siempre 4 (según el ejemplo)",
+							"pm.test(\"Each item's ItemType is 4\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.forEach(function (item) {",
+							"        pm.expect(item.ItemType).to.eql(4);",
+							"    });",
+							"    console.log(\"Todos los elementos tienen 'ItemType' como 4: ✓\");",
+							"});",
+							"",
+							"// Log para inspeccionar los datos de respuesta",
+							"console.log(\"Datos de la respuesta:\", pm.response.json());",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{passwordGenerated}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{emailGenerated}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}api/filters.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"filters.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Eliminar Protecto",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Validación del código de estado",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    console.log(\"El código de estado es 200: ✓\");",
+							"});",
+							"",
+							"// Validación del tiempo de respuesta",
+							"pm.test(\"Response time is less than 1500ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1500);",
+							"    console.log(\"El tiempo de respuesta es menor a 1500ms: ✓\");",
+							"});",
+							"",
+							"pm.test(\"Response has Content-Type header set to application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has all the expected attributes\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData).to.have.property('Id');",
+							"    pm.expect(responseData).to.have.property('Content');",
+							"    pm.expect(responseData).to.have.property('ItemsCount');",
+							"    pm.expect(responseData).to.have.property('Icon');",
+							"    pm.expect(responseData).to.have.property('ItemType');",
+							"    pm.expect(responseData).to.have.property('ParentId');",
+							"    pm.expect(responseData).to.have.property('Collapsed');",
+							"    pm.expect(responseData).to.have.property('ItemOrder');",
+							"    pm.expect(responseData).to.have.property('Children');",
+							"    pm.expect(responseData).to.have.property('IsProjectShared');",
+							"    pm.expect(responseData).to.have.property('ProjectShareOwnerName');",
+							"    pm.expect(responseData).to.have.property('ProjectShareOwnerEmail');",
+							"    pm.expect(responseData).to.have.property('IsShareApproved');",
+							"    pm.expect(responseData).to.have.property('IsOwnProject');",
+							"    pm.expect(responseData).to.have.property('LastSyncedDateTime');",
+							"    pm.expect(responseData).to.have.property('LastUpdatedDate');",
+							"    pm.expect(responseData).to.have.property('Deleted');",
+							"    pm.expect(responseData).to.have.property('SyncClientCreationId');",
+							"});",
+							"",
+							"",
+							"",
+							"pm.test(\"Deleted attribute is set to true\", function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.Deleted).to.be.true;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Content attribute is a valid text\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.Content).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"ID matches the projectId from the environment\", function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.Id).to.eql(pm.environment.get(\"projectId\"));",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{passwordGenerated}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{emailGenerated}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}api/projects/{{projectId}}.json",
+					"host": [
+						"{{url}}api"
+					],
+					"path": [
+						"projects",
+						"{{projectId}}.json"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "emailGenerated",
+			"value": ""
+		}
+	]
+}
