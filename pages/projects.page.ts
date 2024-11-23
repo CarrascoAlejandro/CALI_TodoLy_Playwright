@@ -35,6 +35,14 @@ export class ProjectsPage {
     readonly nonWorkProjects: Locator;
     readonly firstItemInNonWorkProject: Locator;
     readonly firstItemInNonWorkProjectDueDateBox: Locator;
+
+    readonly addNewProjectButton: Locator;
+    readonly newProjectNameInput: Locator;
+    readonly newProjectSaveButton: Locator;
+    readonly optionsButton: Locator;
+    readonly fifthOptionInMenu: Locator;
+    readonly updatedIcon: Locator;
+
     
 
     constructor(page: Page) {
@@ -73,6 +81,15 @@ export class ProjectsPage {
         this.firstItemInNonWorkProjectDueDateBox = page.locator('#mainItemList > li:nth-child(1) .ItemDueDate').getByText('Set Due Date');
         
         // this.firstItemInNonWorkProject = page.locator('#mainProjectList > li > div > table .ProjItemContent:not(:has-text("Work")) > li:nth-child(1)');
+
+        this.addNewProjectButton = page.locator('.ProjItemContent', { hasText: 'Add New Project' });
+        this.newProjectNameInput = page.locator('#NewProjNameInput');
+        this.newProjectSaveButton = page.locator('#NewProjNameButton');
+        // this.optionsButton = page.getByRole('img', { name: 'Options' });
+        this.optionsButton = page.locator('.ProjItemMenu[style*="display: block;"] img[title="Options"]');
+        this.updatedIcon = page.getByRole('row', { name: 'nuevo proyecto Options', exact: true }).locator('#ListIcon')
+
+        this.fifthOptionInMenu = page.locator('span:nth-child(5)').first();
 
     }
 
@@ -247,5 +264,32 @@ export class ProjectsPage {
         const newTodoItemHTML : string = await this.firstItemInNonWorkProject.innerHTML();
         console.log(newTodoItemHTML);
         expect(newTodoItemHTML).toContain(formatDateToMatchView(oneMonthFromToday) + " 12:00 AM");
+    }
+
+    //desde aqui :)
+    async createProjectWithCustomIcon(projectName: string) {
+        // Hacer clic en el botón "Add New Project"
+        await this.addNewProjectButton.click();
+    
+        // Llenar el nombre del proyecto
+        await this.newProjectNameInput.waitFor({ state: 'visible', timeout: 5000 });
+        await this.newProjectNameInput.fill(projectName);
+    
+        // Guardar el nuevo proyecto
+        await this.newProjectSaveButton.waitFor({ state: 'visible', timeout: 5000 });
+        await this.newProjectSaveButton.click();
+    
+        // Seleccionar el proyecto recién creado
+        const newProjectCell = this.page.getByRole('cell', { name: projectName, exact: true });
+        await newProjectCell.waitFor({ state: 'visible', timeout: 5000 });
+        await newProjectCell.click();
+    
+        // Abrir el menú de opciones
+        await this.optionsButton.waitFor({ state: 'visible', timeout: 10000 });
+        await this.optionsButton.click();
+    
+        // Seleccionar un nuevo icono (5º icono en el menú)
+        await this.fifthOptionInMenu.waitFor({ state: 'visible', timeout: 5000 });
+        await this.fifthOptionInMenu.click();
     }
 }
