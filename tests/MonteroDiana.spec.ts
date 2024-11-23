@@ -31,3 +31,29 @@ test("Crear un nuevo proyecto con icono personalizado y validar creación", asyn
     await expect(defaultIcon).not.toBeVisible();
 });
 
+test("Agregar un ítem con prioridad a un proyecto y validar la asignación", async ({ page }) => {
+    const projectsPage = new ProjectsPage(page);
+
+    // Nombre del proyecto y del ítem
+    const projectName = "Work";
+    const itemName = "Nuevo ítem";
+    const priorityLevel = "2"; // Prioridad a seleccionar (por ejemplo, la segunda opción)
+
+    // Llamar a la función para agregar un ítem con prioridad
+    await projectsPage.addItemWithPriority(projectName, itemName, priorityLevel);
+
+    // Verificar que el ítem fue creado correctamente en el proyecto
+    const currentItem = projectsPage.page.locator('.ItemContentDiv', { hasText: itemName });
+    await currentItem.waitFor({ state: 'visible', timeout: 5000 });
+    await expect(currentItem).toHaveText(new RegExp(`^${itemName}$`));
+
+    // Verificar que no hay errores (opcional)
+    const errorMessages = page.locator('.error'); // Ajustar según cómo se muestran los errores
+    await expect(errorMessages).toHaveCount(0); // Asegurarse de que no haya errores visibles
+
+    // Verifica que el color no sea negro
+    const itemTextColor = await currentItem.evaluate((el) => window.getComputedStyle(el).color);
+    await expect(itemTextColor).not.toBe('rgb(0, 0, 0)');
+});
+
+

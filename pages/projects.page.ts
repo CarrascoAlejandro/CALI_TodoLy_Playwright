@@ -42,6 +42,7 @@ export class ProjectsPage {
     readonly optionsButton: Locator;
     readonly fifthOptionInMenu: Locator;
     readonly updatedIcon: Locator;
+    readonly menuItem: Locator;
 
     
 
@@ -90,6 +91,8 @@ export class ProjectsPage {
         this.updatedIcon = page.getByRole('row', { name: 'nuevo proyecto Options', exact: true }).locator('#ListIcon')
 
         this.fifthOptionInMenu = page.locator('span:nth-child(5)').first();
+
+        this.menuItem = page.locator('#itemContextMenu');
 
     }
 
@@ -292,4 +295,35 @@ export class ProjectsPage {
         await this.fifthOptionInMenu.waitFor({ state: 'visible', timeout: 5000 });
         await this.fifthOptionInMenu.click();
     }
+
+    async addItemWithPriority(projectName: string, itemName: string, priorityLevel: string) {
+        // Seleccionar el proyecto
+        await this.page.getByRole('cell', { name: projectName, exact: true }).click();
+
+        // Añadir un ítem
+        await this.addNewTodoTextArea.waitFor({ state: 'visible' });
+        await this.addNewTodoTextArea.fill(itemName);
+        await this.page.keyboard.press('Enter');
+        await this.loader.waitFor({ state: 'hidden' });
+        // Verificar que el item ha sido creado
+        const currentItem = this.page.locator('.ItemContentDiv', { hasText: itemName });
+        await currentItem.waitFor({ state: 'visible', timeout: 5000 });
+        await expect(currentItem).toHaveText(new RegExp(`^${itemName}$`));
+
+        // Abrir el menú de opciones del ítem
+        
+        await currentItem.hover();
+
+        await this.page.getByRole('img', { name: 'Options' }).click();
+
+        await this.menuItem.getByText(priorityLevel).click();
+        await this.page.waitForTimeout(5000);
+        // Esperar a que el menú de opciones desaparezca
+        const optionsButton = currentItem.locator('img.ItemMenu[title="Options"]:last-child');
+        await optionsButton.waitFor({ state: 'detached', timeout: 5000 });
+
+        // Esperar un momento para que el color del texto se actualice
+        await currentItem.waitFor({ state: 'visible', timeout: 7000 });
+    }
+    
 }
