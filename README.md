@@ -26,7 +26,8 @@
 
 4. Test Case 4
 
-    - Adicionar 2 items a cualquier proyecto no _Work_. Adicionar fecha de entrega al primer item.
+    - Adicionar 2 items a cualquier proyecto no _Work_. 
+    - Adicionar fecha de entrega al primer item.
 
 5. Test Case 5
 

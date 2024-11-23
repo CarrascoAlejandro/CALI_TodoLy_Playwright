@@ -32,6 +32,11 @@ export class ProjectsPage {
     readonly saveEditButton: Locator;
     readonly currentProjectTitle: Locator;
 
+    readonly nonWorkProjects: Locator;
+    readonly firstItemInNonWorkProject: Locator;
+    readonly firstItemInNonWorkProjectDueDateBox: Locator;
+    
+
     constructor(page: Page) {
         this.page = page;
         this.signOutButton = page.locator('.signout');
@@ -61,6 +66,13 @@ export class ProjectsPage {
         this.editTextbox = page.locator('#ItemEditTextbox');
         this.saveEditButton = page.locator('#ItemEditSubmit');
         this.currentProjectTitle = page.locator('#CurrentProjectTitle');
+
+        // this.nonWorkProjects = page.locator('.ProjItemContent:not(:has-text("Work"))');
+        this.nonWorkProjects = page.locator('#mainProjectList > li > div > table .ProjItemContent:not(:has-text("Work"))');
+        this.firstItemInNonWorkProject = page.locator('#mainItemList > li:nth-child(1)'); 
+        this.firstItemInNonWorkProjectDueDateBox = page.locator('#mainItemList > li:nth-child(1) .ItemDueDate').getByText('Set Due Date');
+        
+        // this.firstItemInNonWorkProject = page.locator('#mainProjectList > li > div > table .ProjItemContent:not(:has-text("Work")) > li:nth-child(1)');
 
     }
 
@@ -189,5 +201,51 @@ export class ProjectsPage {
         return this.page.locator('.ItemContentDiv', { hasText: itemContent });
     }
             
+    async selectNonWorkProject() {
+        await this.loader.waitFor({ state: 'hidden' });
+        if (await this.nonWorkProjects.count() > 0) {
+            // Capture the project name before clicking
+            const expectedProjectName = await this.nonWorkProjects.first().textContent();
+            // Seleccionar el primer proyecto no "Work" encontrado
+            await this.nonWorkProjects.first().click(); 
+            // Ver el proyecto seleccionado
+            console.log(`Selection of project: '${expectedProjectName}'`);
+        } else {
+            throw new Error("No se encontró ningún proyecto que no sea 'Work'");
+        }
+    }
     
+    async createNewItemNonWorkProject(todoItemContent = "test content"){
+        if (await this.nonWorkProjects.count() > 0) {
+            await this.addNewTodoTextArea.waitFor({ state: 'visible' });
+            await this.addNewTodoTextArea.fill(todoItemContent);
+            await this.page.keyboard.press('Enter');
+            await this.loader.waitFor({ state: 'hidden' });
+            //confirmar que el elemento se creó
+            // expect(this.newTodoItemLI).toHaveText(todoItemContent);
+            
+            // Verificar que el item ha sido creado
+            const currentProjectTitle = this.page.locator('.ItemContentDiv', { hasText: todoItemContent });
+            await currentProjectTitle.waitFor({ state: 'visible', timeout: 5000 });
+            await expect(currentProjectTitle).toHaveText(new RegExp(`^${todoItemContent}$`));
+        
+        }else{
+            throw new Error("No se encontró ningún proyecto que no sea 'Work' para pode crear un item");
+        }
+    }
+
+    async setDateAtFirstTodoItem() {
+        const oneMonthFromToday : Date = getOneMonthFromToday();
+        await this.firstItemInNonWorkProject.hover();
+        await this.firstItemInNonWorkProjectDueDateBox.click();
+        await this.dueDateInputTextBox.waitFor({ state: 'visible' });
+        await this.dueDateInputTextBox.fill(formatDateToYYYYMMDD(oneMonthFromToday));
+        await this.page.keyboard.press('Enter');
+        await this.loader.waitFor({ state: 'hidden' });
+
+        //confirmar que el elemento creado tenga la fecha visible y en el formato correcto
+        const newTodoItemHTML : string = await this.firstItemInNonWorkProject.innerHTML();
+        console.log(newTodoItemHTML);
+        expect(newTodoItemHTML).toContain(formatDateToMatchView(oneMonthFromToday) + " 12:00 AM");
+    }
 }
