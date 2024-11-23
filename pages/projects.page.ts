@@ -26,6 +26,22 @@ export class ProjectsPage {
     readonly secondTodoItemMoreOptionsButton: Locator;
     readonly secondTodoItemDeleteButton: Locator;
 
+    readonly addNewProjectButton: Locator;
+    readonly addNewProjectInput: Locator;
+    readonly addNewProjectNameButton: Locator;
+    readonly addNewItemButton: Locator;
+    readonly addItemToProject: Locator;
+    readonly firstItemOptions: Locator;
+    readonly secondItemOptions: Locator;
+    readonly thirdItemOptions: Locator;
+    readonly itemPriority: Locator;   
+    readonly firstItem: Locator;
+    readonly secondItem: Locator;
+    readonly thirdItem: Locator; 
+
+    readonly sortButton: Locator;
+    readonly sortByPriorityButton: Locator;
+
     readonly subprojectOptionsButton: Locator;
     readonly addItemAboveOption: Locator;
     readonly editTextbox: Locator;
@@ -70,6 +86,26 @@ export class ProjectsPage {
         this.secondTodoItemMoreOptionsButton = page.locator('#mainItemList > li:nth-child(2) .ItemMenu');
         this.secondTodoItemDeleteButton = page.locator('#itemContextMenu > li.delete.separator > a');
 
+        this.addNewProjectButton = page.locator('#Div2');
+        this.addNewProjectInput = page.locator('#NewProjNameInput');
+        this.addNewProjectNameButton = page.locator('#NewProjNameButton');
+        
+        this.addNewItemButton = page.locator('#NewItemAddButton');
+        this.addItemToProject = page.locator('#NewItemContentInput');
+        
+        this.firstItem = page.locator('#mainItemList > li:nth-child(1)'); 
+        this.secondItem = page.locator('#mainItemList > li:nth-child(2)'); 
+        this.thirdItem = page.locator('#mainItemList > li:nth-child(3)'); 
+
+        this.firstItemOptions = page.locator('#mainItemList > li:nth-child(1) .ItemMenu');
+        this.secondItemOptions = page.locator('#mainItemList > li:nth-child(2) .ItemMenu');
+        this.thirdItemOptions = page.locator('#mainItemList > li:nth-child(3) .ItemMenu');
+        
+        this.itemPriority = page.locator('#itemContextMenu');
+
+        this.sortButton = page.locator('#SortMenu');
+        this.sortByPriorityButton = page.locator('#moreContextMenu > li.priority > a');
+        
         this.subprojectOptionsButton = page.locator('.ProjItemMenu');
         this.addItemAboveOption = page.locator('li.add.separator a[href="#addAbove"]');
         this.editTextbox = page.locator('#ItemEditTextbox');
@@ -175,7 +211,59 @@ export class ProjectsPage {
     
         // Ensure the item is no longer in the list
         await expect(this.mainContentTasks).not.toContainText(itemIdOfSecondTodoItem);
-    }    
+    }   
+    
+    async createNewProject(projectName: string) {
+        await this.addNewProjectButton.click();
+        await this.addNewProjectInput.fill(projectName);
+        await this.addNewProjectNameButton.click();
+        await this.loader.waitFor({ state: 'hidden' });
+        await this.currentProjectTitle.waitFor({ state: 'visible' });
+        await expect(this.currentProjectTitle).toHaveText(projectName);
+    }
+
+    async createItemToNewProject(itemContent: string) {
+        await this.addNewItemButton.click();
+        await this.addItemToProject.fill(itemContent);
+        await this.page.keyboard.press('Enter');
+        await this.loader.waitFor({ state: 'hidden' });
+        await expect(this.newTodoItemLI).toBeVisible();
+        await expect(this.newTodoItemLI).toContainText(itemContent);
+    }
+
+    async changeFirstItemPriority(priorityLevel: string, rgbColor: string) {
+        await this.firstItem.hover();
+        await this.firstItemOptions.click();
+        await this.itemPriority.getByText(priorityLevel).click();
+        await this.loader.waitFor({ state: 'hidden' });
+        await expect(this.firstItem.locator('.ItemContentDiv')).toHaveCSS('color', rgbColor); 
+    }
+    async changeSecondItemPriority(priorityLevel: string, rgbColor: string) {
+        await this.secondItem.hover();
+        await this.secondItemOptions.click();
+        await this.itemPriority.getByText(priorityLevel).click();
+        await this.loader.waitFor({ state: 'hidden' });
+        await expect(this.secondItem.locator('.ItemContentDiv')).toHaveCSS('color', rgbColor);
+        
+    }
+    async changeThirdItemPriority(priorityLevel: string,rgbColor: string) {
+        await this.thirdItem.hover();
+        await this.thirdItemOptions.click();
+        await this.itemPriority.getByText(priorityLevel).click();
+        await this.loader.waitFor({ state: 'hidden' });
+        await expect(this.thirdItem.locator('.ItemContentDiv')).toHaveCSS('color',rgbColor);
+
+    }
+
+    async sortItemsByPriority() {
+        await this.sortButton.click();
+        await this.sortByPriorityButton.click();
+        await this.loader.waitFor({ state: 'hidden' });
+        await expect(this.messageInfo).toHaveText(/.*Sorted by Priority.*/);
+        await expect(this.firstItem.locator('.ItemContentDiv')).toHaveCSS('color', "rgb(255, 51, 0)");
+        await expect(this.secondItem.locator('.ItemContentDiv')).toHaveCSS('color', 'rgb(22, 139, 184)');
+        await expect(this.thirdItem.locator('.ItemContentDiv')).toHaveCSS('color', 'rgb(81, 153, 45)');
+    }
 
     async createSubproject(subprojectName: string) {
         // Localizar el subproyecto existente dentro del proyecto "Work"
