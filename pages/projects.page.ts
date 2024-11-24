@@ -26,6 +26,22 @@ export class ProjectsPage {
     readonly secondTodoItemMoreOptionsButton: Locator;
     readonly secondTodoItemDeleteButton: Locator;
 
+    readonly addNewProjectButton: Locator;
+    readonly addNewProjectInput: Locator;
+    readonly addNewProjectNameButton: Locator;
+    readonly addNewItemButton: Locator;
+    readonly addItemToProject: Locator;
+    readonly firstItemOptions: Locator;
+    readonly secondItemOptions: Locator;
+    readonly thirdItemOptions: Locator;
+    readonly itemPriority: Locator;   
+    readonly firstItem: Locator;
+    readonly secondItem: Locator;
+    readonly thirdItem: Locator; 
+
+    readonly sortButton: Locator;
+    readonly sortByPriorityButton: Locator;
+
     readonly subprojectOptionsButton: Locator;
     readonly addItemAboveOption: Locator;
     readonly editTextbox: Locator;
@@ -35,6 +51,15 @@ export class ProjectsPage {
     readonly nonWorkProjects: Locator;
     readonly firstItemInNonWorkProject: Locator;
     readonly firstItemInNonWorkProjectDueDateBox: Locator;
+
+    readonly addNewProjectButton: Locator;
+    readonly newProjectNameInput: Locator;
+    readonly newProjectSaveButton: Locator;
+    readonly optionsButton: Locator;
+    readonly fifthOptionInMenu: Locator;
+    readonly updatedIcon: Locator;
+    readonly menuItem: Locator;
+
     
 
     constructor(page: Page) {
@@ -61,6 +86,26 @@ export class ProjectsPage {
         this.secondTodoItemMoreOptionsButton = page.locator('#mainItemList > li:nth-child(2) .ItemMenu');
         this.secondTodoItemDeleteButton = page.locator('#itemContextMenu > li.delete.separator > a');
 
+        this.addNewProjectButton = page.locator('#Div2');
+        this.addNewProjectInput = page.locator('#NewProjNameInput');
+        this.addNewProjectNameButton = page.locator('#NewProjNameButton');
+        
+        this.addNewItemButton = page.locator('#NewItemAddButton');
+        this.addItemToProject = page.locator('#NewItemContentInput');
+        
+        this.firstItem = page.locator('#mainItemList > li:nth-child(1)'); 
+        this.secondItem = page.locator('#mainItemList > li:nth-child(2)'); 
+        this.thirdItem = page.locator('#mainItemList > li:nth-child(3)'); 
+
+        this.firstItemOptions = page.locator('#mainItemList > li:nth-child(1) .ItemMenu');
+        this.secondItemOptions = page.locator('#mainItemList > li:nth-child(2) .ItemMenu');
+        this.thirdItemOptions = page.locator('#mainItemList > li:nth-child(3) .ItemMenu');
+        
+        this.itemPriority = page.locator('#itemContextMenu');
+
+        this.sortButton = page.locator('#SortMenu');
+        this.sortByPriorityButton = page.locator('#moreContextMenu > li.priority > a');
+        
         this.subprojectOptionsButton = page.locator('.ProjItemMenu');
         this.addItemAboveOption = page.locator('li.add.separator a[href="#addAbove"]');
         this.editTextbox = page.locator('#ItemEditTextbox');
@@ -70,6 +115,17 @@ export class ProjectsPage {
         this.nonWorkProjects = page.locator('#mainProjectList > li > div > table .ProjItemContent:not(:has-text("Work"))');
         this.firstItemInNonWorkProject = page.locator('#mainItemList > li:nth-child(1)'); 
         this.firstItemInNonWorkProjectDueDateBox = page.locator('#mainItemList > li:nth-child(1) .ItemDueDate').getByText('Set Due Date');
+
+        this.addNewProjectButton = page.locator('.ProjItemContent', { hasText: 'Add New Project' });
+        this.newProjectNameInput = page.locator('#NewProjNameInput');
+        this.newProjectSaveButton = page.locator('#NewProjNameButton');
+        // this.optionsButton = page.getByRole('img', { name: 'Options' });
+        this.optionsButton = page.locator('.ProjItemMenu[style*="display: block;"] img[title="Options"]');
+        this.updatedIcon = page.getByRole('row', { name: 'nuevo proyecto Options', exact: true }).locator('#ListIcon')
+
+        this.fifthOptionInMenu = page.locator('span:nth-child(5)').first();
+
+        this.menuItem = page.locator('#itemContextMenu');
 
     }
 
@@ -152,7 +208,59 @@ export class ProjectsPage {
     
         // Ensure the item is no longer in the list
         await expect(this.mainContentTasks).not.toContainText(itemIdOfSecondTodoItem);
-    }    
+    }   
+    
+    async createNewProject(projectName: string) {
+        await this.addNewProjectButton.click();
+        await this.addNewProjectInput.fill(projectName);
+        await this.addNewProjectNameButton.click();
+        await this.loader.waitFor({ state: 'hidden' });
+        await this.currentProjectTitle.waitFor({ state: 'visible' });
+        await expect(this.currentProjectTitle).toHaveText(projectName);
+    }
+
+    async createItemToNewProject(itemContent: string) {
+        await this.addNewItemButton.click();
+        await this.addItemToProject.fill(itemContent);
+        await this.page.keyboard.press('Enter');
+        await this.loader.waitFor({ state: 'hidden' });
+        await expect(this.newTodoItemLI).toBeVisible();
+        await expect(this.newTodoItemLI).toContainText(itemContent);
+    }
+
+    async changeFirstItemPriority(priorityLevel: string, rgbColor: string) {
+        await this.firstItem.hover();
+        await this.firstItemOptions.click();
+        await this.itemPriority.getByText(priorityLevel).click();
+        await this.loader.waitFor({ state: 'hidden' });
+        await expect(this.firstItem.locator('.ItemContentDiv')).toHaveCSS('color', rgbColor); 
+    }
+    async changeSecondItemPriority(priorityLevel: string, rgbColor: string) {
+        await this.secondItem.hover();
+        await this.secondItemOptions.click();
+        await this.itemPriority.getByText(priorityLevel).click();
+        await this.loader.waitFor({ state: 'hidden' });
+        await expect(this.secondItem.locator('.ItemContentDiv')).toHaveCSS('color', rgbColor);
+        
+    }
+    async changeThirdItemPriority(priorityLevel: string,rgbColor: string) {
+        await this.thirdItem.hover();
+        await this.thirdItemOptions.click();
+        await this.itemPriority.getByText(priorityLevel).click();
+        await this.loader.waitFor({ state: 'hidden' });
+        await expect(this.thirdItem.locator('.ItemContentDiv')).toHaveCSS('color',rgbColor);
+
+    }
+
+    async sortItemsByPriority() {
+        await this.sortButton.click();
+        await this.sortByPriorityButton.click();
+        await this.loader.waitFor({ state: 'hidden' });
+        await expect(this.messageInfo).toHaveText(/.*Sorted by Priority.*/);
+        await expect(this.firstItem.locator('.ItemContentDiv')).toHaveCSS('color', "rgb(255, 51, 0)");
+        await expect(this.secondItem.locator('.ItemContentDiv')).toHaveCSS('color', 'rgb(22, 139, 184)');
+        await expect(this.thirdItem.locator('.ItemContentDiv')).toHaveCSS('color', 'rgb(81, 153, 45)');
+    }
 
     async createSubproject(subprojectName: string) {
         // Localizar el subproyecto existente dentro del proyecto "Work"
@@ -245,4 +353,62 @@ export class ProjectsPage {
         console.log(newTodoItemHTML);
         expect(newTodoItemHTML).toContain(formatDateToMatchView(oneMonthFromToday) + " 12:00 AM");
     }
+
+    //desde aqui :)
+    async createProjectWithCustomIcon(projectName: string) {
+        // Hacer clic en el botón "Add New Project"
+        await this.addNewProjectButton.click();
+    
+        // Llenar el nombre del proyecto
+        await this.newProjectNameInput.waitFor({ state: 'visible', timeout: 5000 });
+        await this.newProjectNameInput.fill(projectName);
+    
+        // Guardar el nuevo proyecto
+        await this.newProjectSaveButton.waitFor({ state: 'visible', timeout: 5000 });
+        await this.newProjectSaveButton.click();
+    
+        // Seleccionar el proyecto recién creado
+        const newProjectCell = this.page.getByRole('cell', { name: projectName, exact: true });
+        await newProjectCell.waitFor({ state: 'visible', timeout: 5000 });
+        await newProjectCell.click();
+    
+        // Abrir el menú de opciones
+        await this.optionsButton.waitFor({ state: 'visible', timeout: 10000 });
+        await this.optionsButton.click();
+    
+        // Seleccionar un nuevo icono (5º icono en el menú)
+        await this.fifthOptionInMenu.waitFor({ state: 'visible', timeout: 5000 });
+        await this.fifthOptionInMenu.click();
+    }
+
+    async addItemWithPriority(projectName: string, itemName: string, priorityLevel: string) {
+        // Seleccionar el proyecto
+        await this.page.getByRole('cell', { name: projectName, exact: true }).click();
+
+        // Añadir un ítem
+        await this.addNewTodoTextArea.waitFor({ state: 'visible' });
+        await this.addNewTodoTextArea.fill(itemName);
+        await this.page.keyboard.press('Enter');
+        await this.loader.waitFor({ state: 'hidden' });
+        // Verificar que el item ha sido creado
+        const currentItem = this.page.locator('.ItemContentDiv', { hasText: itemName });
+        await currentItem.waitFor({ state: 'visible', timeout: 5000 });
+        await expect(currentItem).toHaveText(new RegExp(`^${itemName}$`));
+
+        // Abrir el menú de opciones del ítem
+        
+        await currentItem.hover();
+
+        await this.page.getByRole('img', { name: 'Options' }).click();
+
+        await this.menuItem.getByText(priorityLevel).click();
+        await this.page.waitForTimeout(5000);
+        // Esperar a que el menú de opciones desaparezca
+        const optionsButton = currentItem.locator('img.ItemMenu[title="Options"]:last-child');
+        await optionsButton.waitFor({ state: 'detached', timeout: 5000 });
+
+        // Esperar un momento para que el color del texto se actualice
+        await currentItem.waitFor({ state: 'visible', timeout: 7000 });
+    }
+    
 }
