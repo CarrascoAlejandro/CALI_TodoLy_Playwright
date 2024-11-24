@@ -67,12 +67,9 @@ export class ProjectsPage {
         this.saveEditButton = page.locator('#ItemEditSubmit');
         this.currentProjectTitle = page.locator('#CurrentProjectTitle');
 
-        // this.nonWorkProjects = page.locator('.ProjItemContent:not(:has-text("Work"))');
         this.nonWorkProjects = page.locator('#mainProjectList > li > div > table .ProjItemContent:not(:has-text("Work"))');
         this.firstItemInNonWorkProject = page.locator('#mainItemList > li:nth-child(1)'); 
         this.firstItemInNonWorkProjectDueDateBox = page.locator('#mainItemList > li:nth-child(1) .ItemDueDate').getByText('Set Due Date');
-        
-        // this.firstItemInNonWorkProject = page.locator('#mainProjectList > li > div > table .ProjItemContent:not(:has-text("Work")) > li:nth-child(1)');
 
     }
 

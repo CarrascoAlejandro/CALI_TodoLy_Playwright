@@ -11,14 +11,14 @@ test.beforeEach(async ({ page }) => {
 
 test("Adicionar 2 ítems a proyecto no Work", async ({ page }) => {
     const projectsPage = new ProjectsPage(page);
-    await projectsPage.selectNonWorkProject(); // Selecciona un proyecto no "Work"
+    await projectsPage.selectNonWorkProject();
     await projectsPage.createNewItemNonWorkProject("Primer ítem en proyecto no Work");
     await projectsPage.createNewItemNonWorkProject("Segundo ítem en proyecto no Work");
 });
 
 test("Adicionar fecha de entrega al primer ítem en proyecto no Work", async ({ page }) => {
     const projectsPage = new ProjectsPage(page);
-    await projectsPage.selectNonWorkProject(); // Selecciona un proyecto no "Work"
+    await projectsPage.selectNonWorkProject();
     await projectsPage.createNewItemNonWorkProject("Primer ítem en proyecto no Work");
     await projectsPage.createNewItemNonWorkProject("Segundo ítem en proyecto no Work");
 

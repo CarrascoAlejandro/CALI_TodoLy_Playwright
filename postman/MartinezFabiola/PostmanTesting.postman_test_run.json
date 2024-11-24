@@ -1,0 +1,426 @@
+{
+	"id": "e537c327-8bfe-46ed-a2ed-f201bdca0a20",
+	"name": "PostmanTesting",
+	"timestamp": "2024-11-23T19:48:05.428Z",
+	"collection_id": "29459627-59b4847d-e05c-497c-b38e-d0f2dc2616e3",
+	"folder_id": 0,
+	"environment_id": "29459627-ff5a3402-c733-41b7-ad4f-e3e6e8dad230",
+	"totalPass": 34,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2024-11-23T19:48:02.070Z",
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "2394595c-de97-4f66-bdbe-172cc97e43c8",
+			"name": "Crear Usuarios",
+			"url": "https://todo.ly/api/user.json",
+			"time": 895,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response time is less than 2000ms": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 2000ms": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				895
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response time is less than 2000ms": true
+				}
+			]
+		},
+		{
+			"id": "c9df89f3-9010-4aaf-ba07-588877fbdba9",
+			"name": "Create Item",
+			"url": "https://todo.ly/api/items.json",
+			"time": 216,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response time is less than 2000ms": true,
+				"Content-Type is present": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 2000ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type is present": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				216
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response time is less than 2000ms": true,
+					"Content-Type is present": true
+				}
+			]
+		},
+		{
+			"id": "6740b056-1cc4-4a9f-b23a-31952447145b",
+			"name": "Create Item Child",
+			"url": "https://todo.ly/api/items.json",
+			"time": 218,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response time is less than 2000ms": true,
+				"Content-Type is present": true,
+				"Imprimir valor de la variable Item": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 2000ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type is present": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Imprimir valor de la variable Item": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				218
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response time is less than 2000ms": true,
+					"Content-Type is present": true,
+					"Imprimir valor de la variable Item": true
+				}
+			]
+		},
+		{
+			"id": "2b9c806d-245e-486b-b1de-dd306303ccab",
+			"name": "Get Root Item By Child Id",
+			"url": "https://todo.ly/api/Items/11614683/RootItem.json",
+			"time": 212,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"El código de estado es 200": true,
+				"El tiempo de respuesta es menor de 2 segundos": true,
+				"El encabezado 'Content-Type' está presente": true,
+				"El encabezado 'Content-Type' es correcto para JSON": true,
+				"El 'OwnerId' coincide con el 'Id' de las variables de entorno": true,
+				"La estructura de respuesta es correcta": true
+			},
+			"testPassFailCounts": {
+				"El código de estado es 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"El tiempo de respuesta es menor de 2 segundos": {
+					"pass": 1,
+					"fail": 0
+				},
+				"El encabezado 'Content-Type' está presente": {
+					"pass": 1,
+					"fail": 0
+				},
+				"El encabezado 'Content-Type' es correcto para JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"El 'OwnerId' coincide con el 'Id' de las variables de entorno": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La estructura de respuesta es correcta": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				212
+			],
+			"allTests": [
+				{
+					"El código de estado es 200": true,
+					"El tiempo de respuesta es menor de 2 segundos": true,
+					"El encabezado 'Content-Type' está presente": true,
+					"El encabezado 'Content-Type' es correcto para JSON": true,
+					"El 'OwnerId' coincide con el 'Id' de las variables de entorno": true,
+					"La estructura de respuesta es correcta": true
+				}
+			]
+		},
+		{
+			"id": "31063c57-8536-410f-bc3a-dcd2c009c31d",
+			"name": "Update Item",
+			"url": "https://todo.ly/api/items/11614683.json",
+			"time": 221,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Response time is less than 2000ms": true,
+				"Content-Type is present": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response time is less than 2000ms": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content-Type is present": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				221
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Response time is less than 2000ms": true,
+					"Content-Type is present": true
+				}
+			]
+		},
+		{
+			"id": "6b5132db-e908-439a-986e-d1e690c4b80d",
+			"name": "Get Done Root Item By Child Id",
+			"url": "https://todo.ly/api/Items/11614684/DoneRootItem.json",
+			"time": 214,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"El código de estado es 200": true,
+				"El tiempo de respuesta es menor de 2 segundos": true,
+				"El encabezado 'Content-Type' está presente": true,
+				"El encabezado 'Content-Type' es correcto para JSON": true,
+				"El 'OwnerId' del elemento raíz y de los hijos coincide con el 'Id' de las variables de entorno": true,
+				"La estructura de respuesta es correcta": true
+			},
+			"testPassFailCounts": {
+				"El código de estado es 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"El tiempo de respuesta es menor de 2 segundos": {
+					"pass": 1,
+					"fail": 0
+				},
+				"El encabezado 'Content-Type' está presente": {
+					"pass": 1,
+					"fail": 0
+				},
+				"El encabezado 'Content-Type' es correcto para JSON": {
+					"pass": 1,
+					"fail": 0
+				},
+				"El 'OwnerId' del elemento raíz y de los hijos coincide con el 'Id' de las variables de entorno": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La estructura de respuesta es correcta": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				214
+			],
+			"allTests": [
+				{
+					"El código de estado es 200": true,
+					"El tiempo de respuesta es menor de 2 segundos": true,
+					"El encabezado 'Content-Type' está presente": true,
+					"El encabezado 'Content-Type' es correcto para JSON": true,
+					"El 'OwnerId' del elemento raíz y de los hijos coincide con el 'Id' de las variables de entorno": true,
+					"La estructura de respuesta es correcta": true
+				}
+			]
+		},
+		{
+			"id": "d9021f5f-5beb-457f-8a8d-1492e4c59e45",
+			"name": "Get Icons By Id",
+			"url": "https://todo.ly/api/icons/1.xml",
+			"time": 217,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"El código de estado es 200": true,
+				"El tiempo de respuesta es razonable": true,
+				"El encabezado 'Content-Type' es correcto para XML": true,
+				"La estructura y contenido de la respuesta XML son correctos": true,
+				"La URL del ícono en la respuesta coincide con la esperada": true
+			},
+			"testPassFailCounts": {
+				"El código de estado es 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"El tiempo de respuesta es razonable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"El encabezado 'Content-Type' es correcto para XML": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La estructura y contenido de la respuesta XML son correctos": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La URL del ícono en la respuesta coincide con la esperada": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				217
+			],
+			"allTests": [
+				{
+					"El código de estado es 200": true,
+					"El tiempo de respuesta es razonable": true,
+					"El encabezado 'Content-Type' es correcto para XML": true,
+					"La estructura y contenido de la respuesta XML son correctos": true,
+					"La URL del ícono en la respuesta coincide con la esperada": true
+				}
+			]
+		},
+		{
+			"id": "36b19943-7f50-4677-8d75-52a0ed89d872",
+			"name": "Get IsAuthenticated",
+			"url": "https://todo.ly/api/authentication/isauthenticated.xml",
+			"time": 217,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"El código de estado es 200": true,
+				"El tiempo de respuesta es razonable": true,
+				"El encabezado 'Content-Type' es correcto para XML": true,
+				"La estructura y contenido de la respuesta XML son correctos": true,
+				"La autenticación es exitosa": true
+			},
+			"testPassFailCounts": {
+				"El código de estado es 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"El tiempo de respuesta es razonable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"El encabezado 'Content-Type' es correcto para XML": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La estructura y contenido de la respuesta XML son correctos": {
+					"pass": 1,
+					"fail": 0
+				},
+				"La autenticación es exitosa": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				217
+			],
+			"allTests": [
+				{
+					"El código de estado es 200": true,
+					"El tiempo de respuesta es razonable": true,
+					"El encabezado 'Content-Type' es correcto para XML": true,
+					"La estructura y contenido de la respuesta XML son correctos": true,
+					"La autenticación es exitosa": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 2410,
+	"collection": {
+		"requests": [
+			{
+				"id": "2394595c-de97-4f66-bdbe-172cc97e43c8",
+				"method": "POST"
+			},
+			{
+				"id": "c9df89f3-9010-4aaf-ba07-588877fbdba9",
+				"method": "POST"
+			},
+			{
+				"id": "6740b056-1cc4-4a9f-b23a-31952447145b",
+				"method": "POST"
+			},
+			{
+				"id": "2b9c806d-245e-486b-b1de-dd306303ccab",
+				"method": "GET"
+			},
+			{
+				"id": "31063c57-8536-410f-bc3a-dcd2c009c31d",
+				"method": "PUT"
+			},
+			{
+				"id": "6b5132db-e908-439a-986e-d1e690c4b80d",
+				"method": "GET"
+			},
+			{
+				"id": "d9021f5f-5beb-457f-8a8d-1492e4c59e45",
+				"method": "GET"
+			},
+			{
+				"id": "36b19943-7f50-4677-8d75-52a0ed89d872",
+				"method": "GET"
+			}
+		]
+	}
+}
