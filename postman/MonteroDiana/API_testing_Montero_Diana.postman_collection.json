@@ -1,0 +1,380 @@
+{
+	"info": {
+		"_postman_id": "5eab1a48-15ac-4e65-8ff6-f69d7badea6b",
+		"name": "API_testing_Montero_Diana",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29459619"
+	},
+	"item": [
+		{
+			"name": "create new item",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"console.log(\"Response Content:\", jsonData.Content);\r",
+							"pm.expect(jsonData.Content).to.eql(pm.variables.get(\"item_content\"));\r",
+							"\r",
+							"pm.test(\"Response time is less than 2000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Valid ID item\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Id).to.above(100000);\r",
+							"\r",
+							"    pm.environment.set(\"item_id\", jsonData.Id);\r",
+							"    console.log(\"item id: \" + pm.environment.get(\"item_id\"));\r",
+							"\r",
+							"    pm.environment.set(\"owner_id\", jsonData.OwnerId);\r",
+							"    console.log(\"owner id: \" + pm.environment.get(\"owner_id\"));\r",
+							"\r",
+							"    pm.environment.set(\"checked\", jsonData.Checked);\r",
+							"    console.log(\"checked: \" + pm.environment.get(\"checked\"));\r",
+							"\r",
+							"\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validación del contenido del item\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Content).to.eqls(`${pm.variables.get(\"item_content\")}`);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validación de creación de item padre\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Children).to.eqls([]);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const randomPhrases = [\r",
+							"    \"The quick brown\",\r",
+							"    \"Success is not\",\r",
+							"    \"To be yourself\",\r",
+							"    \"Life is whats\",\r",
+							"    \"Do not dwell\"\r",
+							"];\r",
+							"console.log(\"Generated content:\", pm.environment.get(\"item_content\"));\r",
+							"\r",
+							"const randomIndex = Math.floor(Math.random() * randomPhrases.length);\r",
+							"pm.environment.set(\"item_content\", randomPhrases[randomIndex]);\r",
+							"pm.request.body.update(JSON.stringify({\r",
+							"    Content: pm.variables.get(\"item_content\")\r",
+							"}));\r",
+							"\r",
+							"console.log(\"Generated content:\", pm.environment.get(\"item_content\"));\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Content\": \"{{item_content}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/items.{{format}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"items.{{format}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get item by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 2000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Valid ID item\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect((jsonData.Id).toString()).to.eqls(`${pm.variables.get(\"item_id\")}`);\r",
+							"\r",
+							"    console.log(\"id item:\" + pm.environment.get(\"item_id\") );\r",
+							";\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validación del contenido del item\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Content).to.eql(pm.environment.get(\"item_content\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validación del propietario del item\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.OwnerId).to.eql(Number(pm.environment.get(\"owner_id\")));\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Verificación de item padre\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Children).to.eqls([]);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/items/{{item_id}}.{{format}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"items",
+						"{{item_id}}.{{format}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update item by id",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const randomPhrases = [\r",
+							"    \"The quick brown updated\",\r",
+							"    \"Success is not updated\",\r",
+							"    \"To be yourself updated\",\r",
+							"    \"Life is whats updated\",\r",
+							"    \"Do not dwell updated\"\r",
+							"];\r",
+							"console.log(\"Generated content to update:\", pm.environment.get(\"item_content_updated\"));\r",
+							"\r",
+							"const randomIndex = Math.floor(Math.random() * randomPhrases.length);\r",
+							"pm.environment.set(\"item_content_updated\", randomPhrases[randomIndex]);\r",
+							"\r",
+							"\r",
+							"console.log(\"Generated content:\", pm.environment.get(\"item_content_updated\"));\r",
+							"\r",
+							"let value_checked =pm.environment.get(\"checked\");\r",
+							"pm.environment.set(\"checked_updated\", !value_checked);\r",
+							"\r",
+							"pm.request.body.update(JSON.stringify({\r",
+							"    Content: pm.variables.get(\"item_content_updated\"),\r",
+							"    Checked: pm.variables.get(\"checked_updated\")\r",
+							"}));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 2000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Updated Content\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    console.log(\"Response Content:\", jsonData.Content);\r",
+							"    pm.expect(jsonData.Content).to.eql(pm.variables.get(\"item_content_updated\"));\r",
+							"\r",
+							"    pm.environment.set(\"item_content\", jsonData.Content);\r",
+							"    console.log(\"item content: \" + pm.environment.get(\"item_content\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Updated Checked\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    console.log(\"Response Checked:\", jsonData.Checked);\r",
+							"    pm.expect(jsonData.Checked).to.eql(pm.variables.get(\"checked_updated\"));\r",
+							"\r",
+							"    pm.environment.set(\"checked\", jsonData.Checked);\r",
+							"    console.log(\"item checked: \" + pm.environment.get(\"checked\"));\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validación de campo no actualizado\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Children).to.eqls([]);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Content\": \"{{item_content_updated}}\",\r\n    \"Checked\": \"{{checked_updated}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/items/{{item_id}}.{{format}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"items",
+						"{{item_id}}.{{format}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete item by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 2000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Valid ID item\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect((jsonData.Id).toString()).to.eqls(`${pm.variables.get(\"item_id\")}`);\r",
+							"\r",
+							"    console.log(\"id item:\" + pm.environment.get(\"item_id\") );\r",
+							";\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validación del contenido del item\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.Content).to.eql(pm.environment.get(\"item_content\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validación del propietario del item\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.OwnerId).to.eql(Number(pm.environment.get(\"owner_id\")));\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/items/{{item_id}}.{{format}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"items",
+						"{{item_id}}.{{format}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{email}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "item_content",
+			"value": ""
+		}
+	]
+}

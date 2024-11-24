@@ -52,7 +52,7 @@ export class ProjectsPage {
     readonly firstItemInNonWorkProject: Locator;
     readonly firstItemInNonWorkProjectDueDateBox: Locator;
 
-    readonly addNewProjectButton: Locator;
+    readonly addNewProjectButtonDi: Locator;
     readonly newProjectNameInput: Locator;
     readonly newProjectSaveButton: Locator;
     readonly optionsButton: Locator;
@@ -116,7 +116,7 @@ export class ProjectsPage {
         this.firstItemInNonWorkProject = page.locator('#mainItemList > li:nth-child(1)'); 
         this.firstItemInNonWorkProjectDueDateBox = page.locator('#mainItemList > li:nth-child(1) .ItemDueDate').getByText('Set Due Date');
 
-        this.addNewProjectButton = page.locator('.ProjItemContent', { hasText: 'Add New Project' });
+        this.addNewProjectButtonDi = page.locator('.ProjItemContent', { hasText: 'Add New Project' });
         this.newProjectNameInput = page.locator('#NewProjNameInput');
         this.newProjectSaveButton = page.locator('#NewProjNameButton');
         // this.optionsButton = page.getByRole('img', { name: 'Options' });
@@ -357,7 +357,7 @@ export class ProjectsPage {
     //desde aqui :)
     async createProjectWithCustomIcon(projectName: string) {
         // Hacer clic en el botón "Add New Project"
-        await this.addNewProjectButton.click();
+        await this.addNewProjectButtonDi.click();
     
         // Llenar el nombre del proyecto
         await this.newProjectNameInput.waitFor({ state: 'visible', timeout: 5000 });
